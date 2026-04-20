@@ -1,0 +1,429 @@
+<!--
+Program name: homework3.html
+Author: Fatima Qureshi
+Date created: 2/24/2026
+Date Last edited: 4/16/2026
+Version 3.0
+Description: ABC Medical patient registration form
+-->
+
+  <!DOCTYPE html>
+  <html>
+
+  <head>
+    <title>Patient Registration</title>
+    <link href="style.css" rel="stylesheet">
+    <script src="validation.js"></script>
+</head>
+
+<body onload="showDate()">
+
+<div class="banner">
+  <img src="logo.png" width="80" alt="ABC Medical Logo">
+  <h1>ABC Medical</h1>
+  Today is: <span id="date"></span>
+</div>
+
+<br>
+
+<h2>Patient Registration Form</h2>
+<p style+"text-align:center; font-size:0.85cm; color:#555;"> Fields marked with * are required.</p>
+
+<form id+"regForm" action="thankyou.html" onsubmit="return handleSubmit()">
+
+<table border="0">
+
+<!-- Block 1 personal info -->
+	<tr>
+		<td colspan="6" class="section-header">Block 1 - Personal Information</td>
+	</tr>
+ 
+	<tr>
+		<td>* First Name:</td>
+		<td>
+			<input type="text" id="firstName" name="firstName"
+				maxlength="30"
+				required
+				pattern="[A-Za-z'\-]{1,30}"
+				title="Letters, apostrophes and dashes only. 1 to 30 characters."
+				oninput="validateFirstName()"
+				onblur="validateFirstName()">
+			<br><span class="error-msg" id="err-firstName"></span>
+		</td>
+ 
+		<td>MI:</td>
+		<td>
+			<input type="text" id="mi" name="mi"
+				maxlength="1" size="3"
+				pattern="[A-Za-z]?"
+				title="Middle initial. One letter only. Optional."
+				onblur="validateMI()">
+			<br><span class="error-msg" id="err-mi"></span>
+		</td>
+ 
+		<td>* Last Name:</td>
+		<td>
+			<input type="text" id="lastName" name="lastName"
+				maxlength="30"
+				required
+				pattern="[A-Za-z'\-]{1,30}"
+				title="Letters, apostrophes and dashes only. 1 to 30 characters."
+				oninput="validateLastName()"
+				onblur="validateLastName()">
+			<br><span class="error-msg" id="err-lastName"></span>
+		</td>
+	</tr>
+ 
+	<tr>
+		<td>* Date of Birth:</td>
+		<td>
+			<input type="date" id="dob" name="dob"
+				required
+				title="Cannot be in the future or more than 120 years ago."
+				onchange="validateDOB()"
+				onblur="validateDOB()">
+			<br><span class="error-msg" id="err-dob"></span>
+		</td>
+ 
+		<td>* SSN:</td>
+		<td colspan="3">
+			<input type="password" id="ssn" name="ssn"
+				maxlength="11"
+				required
+				placeholder="123-45-6789"
+				title="9 digits only. Dashes are added automatically. Hidden for your security."
+				oninput="formatSSN()"
+				onblur="validateSSN()">
+			<br><span class="error-msg" id="err-ssn"></span>
+		</td>
+	</tr>
+ 
+	<!-- Block 2 contact -->
+	<tr>
+		<td colspan="6" class="section-header">Block 2 - Contact Information</td>
+	</tr>
+ 
+	<tr>
+		<td>* Email:</td>
+		<td colspan="2">
+			<input type="email" id="email" name="email"
+				required
+				placeholder="name@domain.com"
+				title="Must be in the format name@domain.com"
+				oninput="validateEmail()"
+				onblur="validateEmail()">
+			<br><span class="error-msg" id="err-email"></span>
+		</td>
+ 
+		<td>* Phone:</td>
+		<td colspan="2">
+			<input type="tel" id="phone" name="phone"
+				required
+				pattern="\d{3}-\d{3}-\d{4}"
+				placeholder="000-000-0000"
+				title="Format: 000-000-0000. Dashes are added automatically."
+				oninput="formatPhone()"
+				onblur="validatePhone()">
+			<br><span class="error-msg" id="err-phone"></span>
+		</td>
+	</tr>
+ 
+	<!-- Block 3 address -->
+	<tr>
+		<td colspan="6" class="section-header">Block 3 - Address</td>
+	</tr>
+ 
+	<tr>
+		<td>* Address Line 1:</td>
+		<td colspan="5">
+			<input type="text" id="addr1" name="addr1"
+				minlength="2" maxlength="30"
+				required
+				title="Required. 2 to 30 characters."
+				oninput="validateAddr1()"
+				onblur="validateAddr1()">
+			<br><span class="error-msg" id="err-addr1"></span>
+		</td>
+	</tr>
+ 
+	<tr>
+		<td>Address Line 2:</td>
+		<td colspan="5">
+			<input type="text" id="addr2" name="addr2"
+				maxlength="30"
+				title="Optional. If entered, must be 2 to 30 characters."
+				onblur="validateAddr2()">
+			<br><span class="error-msg" id="err-addr2"></span>
+		</td>
+	</tr>
+ 
+	<tr>
+		<td>* City:</td>
+		<td>
+			<input type="text" id="city" name="city"
+				minlength="2" maxlength="30"
+				required
+				title="Required. 2 to 30 characters."
+				oninput="validateCity()"
+				onblur="validateCity()">
+			<br><span class="error-msg" id="err-city"></span>
+		</td>
+ 
+		<td>* State:</td>
+		<td>
+			<select id="state" name="state" required
+				title="Select your state from the list."
+				onchange="validateState()">
+				<option value="">-- Select --</option>
+				<option value="AL">AL</option>
+				<option value="AK">AK</option>
+				<option value="AZ">AZ</option>
+				<option value="AR">AR</option>
+				<option value="CA">CA</option>
+				<option value="CO">CO</option>
+				<option value="CT">CT</option>
+				<option value="DE">DE</option>
+				<option value="DC">DC</option>
+				<option value="FL">FL</option>
+				<option value="GA">GA</option>
+				<option value="HI">HI</option>
+				<option value="ID">ID</option>
+				<option value="IL">IL</option>
+				<option value="IN">IN</option>
+				<option value="IA">IA</option>
+				<option value="KS">KS</option>
+				<option value="KY">KY</option>
+				<option value="LA">LA</option>
+				<option value="ME">ME</option>
+				<option value="MD">MD</option>
+				<option value="MA">MA</option>
+				<option value="MI">MI</option>
+				<option value="MN">MN</option>
+				<option value="MS">MS</option>
+				<option value="MO">MO</option>
+				<option value="MT">MT</option>
+				<option value="NE">NE</option>
+				<option value="NV">NV</option>
+				<option value="NH">NH</option>
+				<option value="NJ">NJ</option>
+				<option value="NM">NM</option>
+				<option value="NY">NY</option>
+				<option value="NC">NC</option>
+				<option value="ND">ND</option>
+				<option value="OH">OH</option>
+				<option value="OK">OK</option>
+				<option value="OR">OR</option>
+				<option value="PA">PA</option>
+				<option value="PR">PR</option>
+				<option value="RI">RI</option>
+				<option value="SC">SC</option>
+				<option value="SD">SD</option>
+				<option value="TN">TN</option>
+				<option value="TX">TX</option>
+				<option value="UT">UT</option>
+				<option value="VT">VT</option>
+				<option value="VA">VA</option>
+				<option value="WA">WA</option>
+				<option value="WV">WV</option>
+				<option value="WI">WI</option>
+				<option value="WY">WY</option>
+			</select>
+			<br><span class="error-msg" id="err-state"></span>
+		</td>
+ 
+		<td>* Zip:</td>
+		<td>
+			<input type="text" id="zip" name="zip"
+				maxlength="5"
+				required
+				placeholder="00000"
+				title="5 digits only."
+				oninput="validateZip()"
+				onblur="validateZip()">
+			<br><span class="error-msg" id="err-zip"></span>
+		</td>
+	</tr>
+ 
+	<!-- Block 4 medical -->
+	<tr>
+		<td colspan="6" class="section-header">Block 4 - Medical History and Preferences</td>
+	</tr>
+ 
+	<tr>
+		<td valign="top">Conditions:<br><em style="font-size:0.8em">(check all that apply)</em></td>
+		<td colspan="5">
+			<label title="Check if you have Diabetes.">
+				<input type="checkbox" name="conditions" value="Diabetes"> Diabetes
+			</label>
+			&nbsp;
+			<label title="Check if you have had Covid-19.">
+				<input type="checkbox" name="conditions" value="Covid-19"> Covid-19
+			</label>
+			&nbsp;
+			<label title="Check if you have Asthma.">
+				<input type="checkbox" name="conditions" value="Asthma"> Asthma
+			</label>
+			&nbsp;
+			<label title="Check if you have Allergies.">
+				<input type="checkbox" name="conditions" value="Allergy"> Allergy
+			</label>
+			&nbsp;
+			<label title="Check if you have Heart Disease.">
+				<input type="checkbox" name="conditions" value="Heart Disease"> Heart Disease
+			</label>
+			&nbsp;
+			<label title="Check if you have Hypertension (high blood pressure).">
+				<input type="checkbox" name="conditions" value="Hypertension"> Hypertension
+			</label>
+		</td>
+	</tr>
+ 
+	<tr>
+		<td>Gender:</td>
+		<td colspan="5">
+			<label title="Select if you identify as Male.">
+				<input type="radio" name="g" value="Male"> Male
+			</label>
+			&nbsp;
+			<label title="Select if you identify as Female.">
+				<input type="radio" name="g" value="Female"> Female
+			</label>
+			&nbsp;
+			<label title="Select if you prefer not to say.">
+				<input type="radio" name="g" value="Other"> Other
+			</label>
+		</td>
+	</tr>
+ 
+	<tr>
+		<td>Vaccinated?</td>
+		<td colspan="5">
+			<label title="Select Yes if you are vaccinated.">
+				<input type="radio" name="v" value="Yes"> Yes
+			</label>
+			&nbsp;
+			<label title="Select No if you have not been vaccinated.">
+				<input type="radio" name="v" value="No"> No
+			</label>
+			&nbsp;
+			<label title="Select Unsure if you are not sure.">
+				<input type="radio" name="v" value="Unsure"> Unsure
+			</label>
+		</td>
+	</tr>
+
+  </tr>
+        <td>Insurance?</td>
+        <td> colspan="5">
+          <label title="Select Yes if you have health insurance.">
+              <input type="radio" name="i" value="Yes"> Yes
+          </label>
+          &nbsp;
+          <label title="Select No if you dont have insurance.">
+              <input type="radio" name="i" value="No"> No
+          </label>
+        </td>
+      </tr>
+
+      <tr>
+            <td>Health Score:</td>
+            <td colspan="5">
+                <input type="range" id="healthScore" name="healthScore"
+				min="1" max="10" value="5"
+				title="Slide to rate your health from 1 (poor) to 10 (excellent)."
+				oninput="updateSlider()">
+			<span id="sliderLabel">5 out of 10</span>
+		</td>
+	</tr>
+ 
+	<tr>
+		<td valign="top">Symptoms / Notes:</td>
+		<td colspan="5">
+			<textarea id="symptoms" name="symptoms"
+				rows="4" cols="55"
+				maxlength="1000"
+				title="Optional. No double quotes allowed."
+				placeholder="Describe any current symptoms or notes for your doctor..."></textarea>
+			<br><span class="error-msg" id="err-symptoms"></span>
+		</td>
+	</tr>
+ 
+	<!-- Block 5 account -->
+	<tr>
+		<td colspan="6" class="section-header">Block 5 - Account Information</td>
+	</tr>
+ 
+	<tr>
+		<td>* User ID:</td>
+		<td colspan="5">
+			<input type="text" id="userID" name="userID"
+				minlength="5" maxlength="20"
+				required
+				title="5 to 20 characters. Must start with a letter. Letters, numbers, dashes and underscores only. No spaces."
+				oninput="validateUserID()"
+				onblur="fixUserID()">
+			<br><span class="error-msg" id="err-userID"></span>
+		</td>
+	</tr>
+ 
+	<tr>
+		<td>* Password:</td>
+		<td colspan="2">
+			<input type="password" id="password" name="password"
+				minlength="8" maxlength="30"
+				required
+				title="At least 8 characters. Needs 1 uppercase, 1 lowercase, and 1 number. Cannot be the same as your User ID."
+				oninput="validatePassword()"
+				onblur="validatePassword()">
+			<br><span class="error-msg" id="err-password"></span>
+		</td>
+ 
+		<td>* Re-enter Password:</td>
+		<td colspan="2">
+			<input type="password" id="password2" name="password2"
+				minlength="8" maxlength="30"
+				required
+				title="Re-type your password. Both must match."
+				oninput="validatePassword2()"
+				onblur="validatePassword2()">
+			<br><span class="error-msg" id="err-password2"></span>
+		</td>
+	</tr>
+ 
+	<!-- buttons row -->
+	<tr>
+		<td colspan="6" style="padding-top:14px; text-align:center;">
+			<input type="reset" value="Clear and Start Over"
+				onclick="clearErrors()">
+			&nbsp;
+			<input type="button" value="Review My Info"
+				onclick="showReview()"
+				title="Click to see all entered info before submitting.">
+			&nbsp;
+			<input type="button" id="validateBtn" value="Validate"
+				onclick="validateAll()"
+				title="Check all fields for errors.">
+			&nbsp;
+			<input type="submit" id="submitBtn" value="Submit"
+				title="Submit the form. Only shows if everything is valid."
+				style="display:none;">
+		</td>
+	</tr>
+ 
+</table>
+</form>
+ 
+<br>
+ 
+<div id="reviewPanel" style="display:none;"></div>
+ 
+<br>
+ 
+<div class="footer">
+	ABC Medical
+	<br>
+	<button onclick="alert('Email us at info@abcmedical.com or call (713) 555-0100')">Contact Us</button>
+  </div>
+
+  </body>
+  </html>
