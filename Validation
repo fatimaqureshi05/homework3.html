@@ -1,0 +1,538 @@
+/*
+Program name: validation.js
+Author: Fatima Qureshi
+Date created: 2/24/2026
+Date last edited: 4/16/2026
+Version: 3.0
+Description: JavaScript validation for the ABC Medical patient registration form.
+             Validates fields on the fly and controls the submit button.
+*/
+
+
+// show todays date in the banner
+function showDate() {
+	document.getElementById("date").innerHTML = new Date().toDateString();
+}
+
+
+// ---- helper functions ----
+
+function showError(errId, message) {
+	document.getElementById(errId).innerHTML = message;
+}
+
+function clearError(errId) {
+	document.getElementById(errId).innerHTML = "";
+}
+
+
+// ---- Block 1: Personal Info ----
+
+function validateFirstName() {
+	var val = document.getElementById("firstName").value;
+	if (val == "") {
+		showError("err-firstName", "First name is required.");
+		return false;
+	}
+	if (val.length > 30) {
+		showError("err-firstName", "First name cannot be more than 30 characters.");
+		return false;
+	}
+	// check for letters apostrophes and dashes only
+	var re = /^[A-Za-z'\-]+$/;
+	if (!re.test(val)) {
+		showError("err-firstName", "Only letters, apostrophes and dashes allowed.");
+		return false;
+	}
+	clearError("err-firstName");
+	return true;
+}
+
+function validateLastName() {
+	var val = document.getElementById("lastName").value;
+	if (val == "") {
+		showError("err-lastName", "Last name is required.");
+		return false;
+	}
+	if (val.length > 30) {
+		showError("err-lastName", "Last name cannot be more than 30 characters.");
+		return false;
+	}
+	var re = /^[A-Za-z'\-]+$/;
+	if (!re.test(val)) {
+		showError("err-lastName", "Only letters, apostrophes and dashes allowed.");
+		return false;
+	}
+	clearError("err-lastName");
+	return true;
+}
+
+function validateMI() {
+	var val = document.getElementById("mi").value;
+	// MI is optional so blank is fine
+	if (val == "") {
+		clearError("err-mi");
+		return true;
+	}
+	if (!/^[A-Za-z]$/.test(val)) {
+		showError("err-mi", "Middle initial must be one letter only.");
+		return false;
+	}
+	clearError("err-mi");
+	return true;
+}
+
+function validateDOB() {
+	var val = document.getElementById("dob").value;
+	if (val == "") {
+		showError("err-dob", "Date of birth is required.");
+		return false;
+	}
+
+	var dob = new Date(val);
+	var today = new Date();
+
+	// cant be in the future
+	if (dob >= today) {
+		showError("err-dob", "Date of birth cannot be in the future.");
+		return false;
+	}
+
+	// cant be more than 120 years ago
+	var oldestDate = new Date();
+	oldestDate.setFullYear(oldestDate.getFullYear() - 120);
+	if (dob < oldestDate) {
+		showError("err-dob", "Date of birth cannot be more than 120 years ago.");
+		return false;
+	}
+
+	clearError("err-dob");
+	return true;
+}
+
+// format the SSN as they type (adds dashes automatically)
+function formatSSN() {
+	var el = document.getElementById("ssn");
+	// remove anything that isnt a number
+	var nums = el.value.replace(/\D/g, "");
+
+	if (nums.length > 9) {
+		nums = nums.substring(0, 9);
+	}
+
+	// put in dashes after 3rd and 5th digit
+	if (nums.length > 5) {
+		el.value = nums.substring(0, 3) + "-" + nums.substring(3, 5) + "-" + nums.substring(5);
+	} else if (nums.length > 3) {
+		el.value = nums.substring(0, 3) + "-" + nums.substring(3);
+	} else {
+		el.value = nums;
+	}
+}
+
+function validateSSN() {
+	var val = document.getElementById("ssn").value;
+	if (val == "") {
+		showError("err-ssn", "SSN is required.");
+		return false;
+	}
+	// must match 123-45-6789 format
+	if (!/^\d{3}-\d{2}-\d{4}$/.test(val)) {
+		showError("err-ssn", "SSN must be 9 digits (format: 123-45-6789).");
+		return false;
+	}
+	clearError("err-ssn");
+	return true;
+}
+
+
+// ---- Block 2: Contact Info ----
+
+function validateEmail() {
+	var el = document.getElementById("email");
+	// force lowercase
+	el.value = el.value.toLowerCase();
+	var val = el.value;
+
+	if (val == "") {
+		showError("err-email", "Email is required.");
+		return false;
+	}
+
+	var re = /^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}$/;
+	if (!re.test(val)) {
+		showError("err-email", "Please enter a valid email address (example: name@domain.com).");
+		return false;
+	}
+	clearError("err-email");
+	return true;
+}
+
+// format phone number with dashes as they type
+function formatPhone() {
+	var el = document.getElementById("phone");
+	var nums = el.value.replace(/\D/g, "");
+
+	if (nums.length > 10) {
+		nums = nums.substring(0, 10);
+	}
+
+	if (nums.length > 6) {
+		el.value = nums.substring(0, 3) + "-" + nums.substring(3, 6) + "-" + nums.substring(6);
+	} else if (nums.length > 3) {
+		el.value = nums.substring(0, 3) + "-" + nums.substring(3);
+	} else {
+		el.value = nums;
+	}
+}
+
+function validatePhone() {
+	var val = document.getElementById("phone").value;
+	if (val == "") {
+		showError("err-phone", "Phone number is required.");
+		return false;
+	}
+	if (!/^\d{3}-\d{3}-\d{4}$/.test(val)) {
+		showError("err-phone", "Phone must be 10 digits (format: 000-000-0000).");
+		return false;
+	}
+	clearError("err-phone");
+	return true;
+}
+
+
+// ---- Block 3: Address ----
+
+function validateAddr1() {
+	var val = document.getElementById("addr1").value;
+	if (val == "") {
+		showError("err-addr1", "Address Line 1 is required.");
+		return false;
+	}
+	if (val.length < 2 || val.length > 30) {
+		showError("err-addr1", "Address must be between 2 and 30 characters.");
+		return false;
+	}
+	clearError("err-addr1");
+	return true;
+}
+
+function validateAddr2() {
+	var val = document.getElementById("addr2").value;
+	// addr2 is optional
+	if (val == "") {
+		clearError("err-addr2");
+		return true;
+	}
+	if (val.length < 2 || val.length > 30) {
+		showError("err-addr2", "If entered, Address Line 2 must be 2 to 30 characters.");
+		return false;
+	}
+	clearError("err-addr2");
+	return true;
+}
+
+function validateCity() {
+	var val = document.getElementById("city").value;
+	if (val == "") {
+		showError("err-city", "City is required.");
+		return false;
+	}
+	if (val.length < 2 || val.length > 30) {
+		showError("err-city", "City must be between 2 and 30 characters.");
+		return false;
+	}
+	clearError("err-city");
+	return true;
+}
+
+function validateState() {
+	var val = document.getElementById("state").value;
+	if (val == "") {
+		showError("err-state", "Please select a state.");
+		return false;
+	}
+	clearError("err-state");
+	return true;
+}
+
+function validateZip() {
+	var el = document.getElementById("zip");
+	// strip non-digits
+	var nums = el.value.replace(/\D/g, "");
+	if (nums.length > 5) {
+		nums = nums.substring(0, 5);
+	}
+	el.value = nums;
+
+	if (nums == "") {
+		showError("err-zip", "Zip code is required.");
+		return false;
+	}
+	if (nums.length != 5) {
+		showError("err-zip", "Zip code must be exactly 5 digits.");
+		return false;
+	}
+	clearError("err-zip");
+	return true;
+}
+
+
+// ---- Block 4: Medical ----
+
+// updates the label next to the slider as you move it
+function updateSlider() {
+	var val = document.getElementById("healthScore").value;
+	document.getElementById("sliderLabel").innerHTML = val + " out of 10";
+}
+
+function validateSymptoms() {
+	var val = document.getElementById("symptoms").value;
+	// double quotes arent allowed in this field
+	if (val.indexOf('"') != -1) {
+		showError("err-symptoms", "Double quotes are not allowed in this field.");
+		return false;
+	}
+	clearError("err-symptoms");
+	return true;
+}
+
+
+// ---- Block 5: Account Info ----
+
+function validateUserID() {
+	var val = document.getElementById("userID").value;
+
+	if (val == "") {
+		showError("err-userID", "User ID is required.");
+		return false;
+	}
+
+	// cannot start with a number
+	if (/^\d/.test(val)) {
+		showError("err-userID", "User ID cannot start with a number.");
+		return false;
+	}
+
+	// only letters numbers dashes and underscores, no spaces
+	if (/[^A-Za-z0-9_\-]/.test(val)) {
+		showError("err-userID", "Only letters, numbers, dashes and underscores are allowed. No spaces.");
+		return false;
+	}
+
+	if (val.length < 5) {
+		showError("err-userID", "User ID must be at least 5 characters.");
+		return false;
+	}
+
+	if (val.length > 20) {
+		showError("err-userID", "User ID cannot be more than 20 characters.");
+		return false;
+	}
+
+	clearError("err-userID");
+	return true;
+}
+
+// convert userID to lowercase when they leave the field
+function fixUserID() {
+	var el = document.getElementById("userID");
+	el.value = el.value.toLowerCase();
+	validateUserID();
+	// re-check password if they already filled it in since password cant equal userID
+	if (document.getElementById("password").value != "") {
+		validatePassword();
+	}
+}
+
+function validatePassword() {
+	var pw = document.getElementById("password").value;
+	var uid = document.getElementById("userID").value.toLowerCase();
+
+	if (pw == "") {
+		showError("err-password", "Password is required.");
+		return false;
+	}
+	if (pw.length < 8) {
+		showError("err-password", "Password must be at least 8 characters.");
+		return false;
+	}
+	// needs at least one uppercase letter
+	if (!/[A-Z]/.test(pw)) {
+		showError("err-password", "Password needs at least 1 uppercase letter.");
+		return false;
+	}
+	// needs at least one lowercase letter
+	if (!/[a-z]/.test(pw)) {
+		showError("err-password", "Password needs at least 1 lowercase letter.");
+		return false;
+	}
+	// needs at least one number
+	if (!/[0-9]/.test(pw)) {
+		showError("err-password", "Password needs at least 1 number.");
+		return false;
+	}
+	// password cant be the same as userID
+	if (uid != "" && pw.toLowerCase() == uid) {
+		showError("err-password", "Password cannot be the same as your User ID.");
+		return false;
+	}
+	clearError("err-password");
+	// re-validate confirm password if they already typed something in it
+	if (document.getElementById("password2").value != "") {
+		validatePassword2();
+	}
+	return true;
+}
+
+function validatePassword2() {
+	var pw1 = document.getElementById("password").value;
+	var pw2 = document.getElementById("password2").value;
+
+	if (pw2 == "") {
+		showError("err-password2", "Please re-enter your password.");
+		return false;
+	}
+	if (pw1 != pw2) {
+		showError("err-password2", "Passwords do not match.");
+		return false;
+	}
+	clearError("err-password2");
+	return true;
+}
+
+
+// ---- Validate button: runs all the checks ----
+
+function validateAll() {
+	// run every validation function and track if anything failed
+	var ok = true;
+
+	if (!validateFirstName())  ok = false;
+	if (!validateMI())         ok = false;
+	if (!validateLastName())   ok = false;
+	if (!validateDOB())        ok = false;
+	if (!validateSSN())        ok = false;
+	if (!validateEmail())      ok = false;
+	if (!validatePhone())      ok = false;
+	if (!validateAddr1())      ok = false;
+	if (!validateAddr2())      ok = false;
+	if (!validateCity())       ok = false;
+	if (!validateState())      ok = false;
+	if (!validateZip())        ok = false;
+	if (!validateSymptoms())   ok = false;
+	if (!validateUserID())     ok = false;
+	if (!validatePassword())   ok = false;
+	if (!validatePassword2())  ok = false;
+
+	if (ok) {
+		// show submit button only if everything passed
+		document.getElementById("submitBtn").style.display = "inline";
+		alert("All fields are valid! You can now click Submit.");
+	} else {
+		// hide submit button if there are errors
+		document.getElementById("submitBtn").style.display = "none";
+		alert("Please fix the errors on the form before submitting.");
+	}
+
+	return ok;
+}
+
+
+// ---- Submit handler ---- 
+
+function handleSubmit() {
+	// run all validations one more time just to be sure
+	return validateAll();
+}
+
+
+// ---- Clear button ----
+
+function clearErrors() {
+	// clear all error messages
+	document.getElementById("err-firstName").innerHTML = "";
+	document.getElementById("err-mi").innerHTML = "";
+	document.getElementById("err-lastName").innerHTML = "";
+	document.getElementById("err-dob").innerHTML = "";
+	document.getElementById("err-ssn").innerHTML = "";
+	document.getElementById("err-email").innerHTML = "";
+	document.getElementById("err-phone").innerHTML = "";
+	document.getElementById("err-addr1").innerHTML = "";
+	document.getElementById("err-addr2").innerHTML = "";
+	document.getElementById("err-city").innerHTML = "";
+	document.getElementById("err-state").innerHTML = "";
+	document.getElementById("err-zip").innerHTML = "";
+	document.getElementById("err-symptoms").innerHTML = "";
+	document.getElementById("err-userID").innerHTML = "";
+	document.getElementById("err-password").innerHTML = "";
+	document.getElementById("err-password2").innerHTML = "";
+
+	// hide the submit button again
+	document.getElementById("submitBtn").style.display = "none";
+
+	// hide the review panel too
+	document.getElementById("reviewPanel").style.display = "none";
+
+	// reset slider label back to default
+	document.getElementById("sliderLabel").innerHTML = "5 out of 10";
+}
+
+
+// ---- Review button: shows all the entered info below the form ----
+
+function showReview() {
+	var html = "<h3>Review Your Information</h3>";
+	html += "<table border='1' cellpadding='5'>";
+
+	html += "<tr><td><b>First Name</b></td><td>" + document.getElementById("firstName").value + "</td></tr>";
+	html += "<tr><td><b>Middle Initial</b></td><td>" + document.getElementById("mi").value + "</td></tr>";
+	html += "<tr><td><b>Last Name</b></td><td>" + document.getElementById("lastName").value + "</td></tr>";
+	html += "<tr><td><b>Date of Birth</b></td><td>" + document.getElementById("dob").value + "</td></tr>";
+
+	// mask the SSN, only show last 4
+	var ssn = document.getElementById("ssn").value;
+	var maskedSSN = "***-**-" + ssn.substring(ssn.length - 4);
+	html += "<tr><td><b>SSN</b></td><td>" + maskedSSN + "</td></tr>";
+
+	html += "<tr><td><b>Email</b></td><td>" + document.getElementById("email").value + "</td></tr>";
+	html += "<tr><td><b>Phone</b></td><td>" + document.getElementById("phone").value + "</td></tr>";
+	html += "<tr><td><b>Address Line 1</b></td><td>" + document.getElementById("addr1").value + "</td></tr>";
+	html += "<tr><td><b>Address Line 2</b></td><td>" + document.getElementById("addr2").value + "</td></tr>";
+	html += "<tr><td><b>City</b></td><td>" + document.getElementById("city").value + "</td></tr>";
+	html += "<tr><td><b>State</b></td><td>" + document.getElementById("state").value + "</td></tr>";
+	html += "<tr><td><b>Zip</b></td><td>" + document.getElementById("zip").value + "</td></tr>";
+
+	// get all checked conditions
+	var checkboxes = document.querySelectorAll("input[name='conditions']:checked");
+	var conditions = "";
+	for (var i = 0; i < checkboxes.length; i++) {
+		conditions += checkboxes[i].value;
+		if (i < checkboxes.length - 1) {
+			conditions += ", ";
+		}
+	}
+	if (conditions == "") conditions = "None selected";
+	html += "<tr><td><b>Conditions</b></td><td>" + conditions + "</td></tr>";
+
+	// get selected radio buttons
+	var gender = document.querySelector("input[name='g']:checked");
+	html += "<tr><td><b>Gender</b></td><td>" + (gender ? gender.value : "Not selected") + "</td></tr>";
+
+	var vaccinated = document.querySelector("input[name='v']:checked");
+	html += "<tr><td><b>Vaccinated?</b></td><td>" + (vaccinated ? vaccinated.value : "Not selected") + "</td></tr>";
+
+	var insurance = document.querySelector("input[name='i']:checked");
+	html += "<tr><td><b>Insurance?</b></td><td>" + (insurance ? insurance.value : "Not selected") + "</td></tr>";
+
+	html += "<tr><td><b>Health Score</b></td><td>" + document.getElementById("healthScore").value + " out of 10</td></tr>";
+	html += "<tr><td><b>Symptoms/Notes</b></td><td>" + document.getElementById("symptoms").value + "</td></tr>";
+	html += "<tr><td><b>User ID</b></td><td>" + document.getElementById("userID").value + "</td></tr>";
+	html += "<tr><td><b>Password</b></td><td>********</td></tr>";
+
+	html += "</table>";
+
+	var panel = document.getElementById("reviewPanel");
+	panel.innerHTML = html;
+	panel.style.display = "block";
+}
